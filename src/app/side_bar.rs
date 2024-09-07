@@ -1,3 +1,4 @@
+use super::entry::ParameterWidget;
 use super::main_app;
 
 pub trait SideBar {
@@ -20,31 +21,15 @@ impl SideBar for main_app::FinhouseApp {
                 .show(ui, |ui| {
                     let entry = &mut self.entries[self.selected_entry];
 
-                    sidebar_widget(ui, "Tab Navn", egui::TextEdit::singleline(&mut entry.name));
-                    sidebar_widget(
-                        ui,
-                        "Bolig pris",
-                        egui::DragValue::new(&mut entry.house_price),
-                    );
-                    sidebar_widget(
-                        ui,
-                        "Egen udbetaling",
-                        egui::DragValue::new(&mut entry.initial_payment),
-                    );
-                    sidebar_widget(
-                        ui,
-                        "Låneperiode",
-                        egui::DragValue::new(&mut entry.payment_duration),
-                    );
-                    sidebar_widget(
-                        ui,
-                        "Investerings værdi",
-                        egui::DragValue::new(&mut entry.investment),
-                    );
+                    sidebar_widget(ui, "Tab Navn", entry.name_widget());
+                    sidebar_widget(ui, "Bolig pris", entry.house_price_widget());
+                    sidebar_widget(ui, "Egen udbetaling", entry.initial_payment_widget());
+                    sidebar_widget(ui, "Låneperiode", entry.payment_duration_widget());
+                    sidebar_widget(ui, "Investerings værdi", entry.investments_widget());
                     sidebar_widget(
                         ui,
                         "Månedlig ydelse før fradrag",
-                        egui::DragValue::new(&mut entry.monthly_payment),
+                        entry.monthly_payment_widget(),
                     );
                 });
 
