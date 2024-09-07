@@ -16,8 +16,8 @@ mod prelude {
 pub struct Entry {
     // #[serde(skip)]
     pub name: String,
-    house_price: u64,
-    initial_payment: u64,
+    house_price: i64,
+    initial_payment: i64,
     interest: Percentage,
     interest_deduction: Percentage,
     value_increase: Percentage,
@@ -41,7 +41,7 @@ pub trait ParameterWidget {
 
     fn interest_widget(&mut self) -> impl Widget;
     fn interest_deduction_widget(&mut self) -> impl Widget;
-    fn monthly_payment_widget(&mut self) -> impl Widget;
+    fn monthly_payment_widget(&mut self, after_tax: bool) -> impl Widget;
 
     fn investments_widget(&mut self) -> impl Widget;
     fn investments_gain_widget(&mut self) -> impl Widget;

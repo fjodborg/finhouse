@@ -2,10 +2,10 @@ use super::prelude::*;
 
 impl Entry {
     /// Calculates how much needs to be paid to pay off the debt before the specified years.
-    fn calculate_monthly_payment(&self, loan: f64, years: f64) -> f64 {
+    pub fn calculate_monthly_payment(loan: f64, years: f64, interest_per: Percentage) -> f64 {
         // (I (1 + I)^Y L)/(-1 + (1 + I)^Y)
 
-        let interest: f64 = self.interest.into();
+        let interest: f64 = interest_per.into();
         let monthly_interest: f64 = interest / 12.0;
         let num_payments = years * 12.0;
 
@@ -15,11 +15,15 @@ impl Entry {
         yearly_payments
     }
 
-    fn calculate_payment_duration(&self, loan: f64, monthly_payment: f64) -> f64 {
+    pub fn calculate_payment_duration(
+        loan: f64,
+        monthly_payment: f64,
+        interest_per: Percentage,
+    ) -> f64 {
         // log(-P/(I L - P))/log(1 + I)
         // Same as expression as above, just solved for years instead of payments.
 
-        let interest: f64 = self.interest.into();
+        let interest: f64 = interest_per.into();
         let monthly_interest: f64 = interest / 12.0;
         let payment = monthly_payment;
 
@@ -97,9 +101,9 @@ mod tests {
     mod monthly_payment {
         use super::*;
         fn monthly_payment_helper(percentage: f64, loan: u64, years: u64, expected: u64) {
-            let mut entry = Entry::default();
-            entry.interest = Percentage(percentage);
-            let monthly_payment = entry.calculate_monthly_payment(loan as f64, years as f64);
+            let interest = Percentage(percentage);
+            let monthly_payment =
+                Entry::calculate_monthly_payment(loan as f64, years as f64, interest);
             assert_float_relative_eq!(expected as f64, monthly_payment, BANK_EPI);
         }
 
@@ -147,9 +151,9 @@ mod tests {
             monthly_payment: u64,
             expected: u64,
         ) {
-            let mut entry = Entry::default();
-            entry.interest = Percentage(percentage);
-            let duration = entry.calculate_payment_duration(loan as f64, monthly_payment as f64);
+            let interest = Percentage(percentage);
+            let duration =
+                Entry::calculate_payment_duration(loan as f64, monthly_payment as f64, interest);
             assert_float_relative_eq!(expected as f64, duration, BANK_EPI);
         }
 
@@ -193,24 +197,22 @@ mod tests {
         use super::*;
         #[test]
         fn cyclic_test_1() {
-            let mut entry = Entry::default();
-            entry.interest = Percentage(4.0);
+            let interest = Percentage(4.0);
             let loan = 3_000_000 as f64;
             let years = 30 as f64;
-            let monthly_payment = entry.calculate_monthly_payment(loan, years);
-            let new_years = entry.calculate_payment_duration(loan, monthly_payment);
+            let monthly_payment = Entry::calculate_monthly_payment(loan, years, interest);
+            let new_years = Entry::calculate_payment_duration(loan, monthly_payment, interest);
 
             assert_float_relative_eq!(years, new_years, 0.000000001);
             assert_float_relative_eq!(14322.0, monthly_payment, CYCLE_EPI);
         }
         #[test]
         fn cyclic_test_2() {
-            let mut entry = Entry::default();
-            entry.interest = Percentage(4.0);
+            let interest = Percentage(4.0);
             let loan = 2_000_000 as f64;
             let monthly_payment = 30000 as f64;
-            let years = entry.calculate_payment_duration(loan, monthly_payment);
-            let new_monthly_payment = entry.calculate_monthly_payment(loan, years);
+            let years = Entry::calculate_payment_duration(loan, monthly_payment, interest);
+            let new_monthly_payment = Entry::calculate_monthly_payment(loan, years, interest);
 
             assert_float_relative_eq!(new_monthly_payment, monthly_payment, 0.000000001);
             assert_float_relative_eq!(6.2933, years, CYCLE_EPI);
