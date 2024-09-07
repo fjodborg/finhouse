@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finhouse</title>
+    <style>
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+        }
+
+        #egui_canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        #loading_text {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            font-family: sans-serif;
+        }
+    </style>
+    <link data-trunk rel="rust" data-wasm-opt="2" />
+    <link data-trunk rel="icon" type="image/png" href="assets/icon-256.png" />
+    <script>
+        // Version of your app, change this whenever you make updates
+        const APP_VERSION = '0.1.0';
+
+        // Check if a new version is available
+        function checkVersion() {
+            const lastVersion = localStorage.getItem('app_version');
+            if (lastVersion !== APP_VERSION) {
+                localStorage.setItem('app_version', APP_VERSION);
+                if (lastVersion) {
+                    // Force reload from server
+                    window.location.reload(true);
+                }
+            }
+        }
+
+        // Run the check when the page loads
+        window.addEventListener('load', checkVersion);
+    </script>
+</head>
+
+<body>
+    <div id="loading_text">Loading... If this takes more than a few seconds try in incognito mode or clear your
+        cache/cookies</div>
+    <canvas id="egui_canvas"></canvas>
+</body>
+
+</html>

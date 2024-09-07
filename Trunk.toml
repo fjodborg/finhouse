@@ -1,0 +1,28 @@
+[build]
+target = "index.html"
+release = false
+dist = "dist"
+public_url = "/"
+
+[watch]
+ignore = ["./dist"]
+
+[serve]
+address = "127.0.0.1"
+port = 8080
+open = false
+
+[clean]
+dist = "dist"
+cargo = false
+
+# [[hooks]]
+# stage = "build"
+# command = "rust-script"
+# command_arguments = ["create_404.rs"]
+
+[serve.static_file_headers]
+# "*" = { "Cache-Control" = "no-cache" }
+"*.js" = { "Content-Type" = "application/javascript" }
+"*.wasm" = { "Cache-Control" = "public, max-age=31536000", "Content-Type" = "application/wasm" }
+"*.html" = { "Content-Type" = "text/html" }
