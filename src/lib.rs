@@ -20,5 +20,8 @@ impl eframe::App for FinhouseApp {
         egui::SidePanel::left("side_bar").show(ctx, |ui| {
             self.create_side_panel(ui);
         });
+        egui::CentralPanel::default().show(ctx, |ui| {
+            self.create_main_content(ui);
+        });
     }
 }
