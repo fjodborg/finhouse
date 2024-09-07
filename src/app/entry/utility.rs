@@ -7,3 +7,9 @@ impl Into<f64> for Percentage {
         self.0 / 100.0
     }
 }
+
+#[derive(serde::Deserialize, serde::Serialize)]
+pub struct MultiLines {
+    pub name: String,
+    pub value: u64,
+}

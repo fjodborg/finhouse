@@ -80,4 +80,20 @@ impl ParameterWidget for Entry {
             .speed(0.02)
             .suffix("%")
     }
+
+    fn monthly_expenses_widget(&mut self) -> Vec<(impl Widget, impl Widget)> {
+        self.monthly_expenses
+            .iter_mut()
+            .map(|e| {
+                let label = egui::TextEdit::singleline(&mut e.name);
+
+                let value = DragValue::new(&mut e.value)
+                    .range(0.0..=100_000.0)
+                    .speed(10)
+                    .custom_formatter(move |n, _| format!("{} {}", n, "Dkk"));
+
+                (label, value)
+            })
+            .collect()
+    }
 }

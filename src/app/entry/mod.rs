@@ -5,7 +5,7 @@ mod utility;
 
 use egui::Widget;
 
-pub use super::entry::utility::Percentage;
+pub use super::entry::utility::{MultiLines, Percentage};
 // Prelude to make it easier to split into multiple files but having access like it was one file.
 mod prelude {
     pub use super::Entry;
@@ -28,6 +28,8 @@ pub struct Entry {
     investment: u64,
     investment_gain: Percentage,
     investment_tax: Percentage,
+
+    pub monthly_expenses: Vec<MultiLines>,
 }
 
 pub trait ParameterWidget {
@@ -44,4 +46,6 @@ pub trait ParameterWidget {
     fn investments_widget(&mut self) -> impl Widget;
     fn investments_gain_widget(&mut self) -> impl Widget;
     fn investments_tax_widget(&mut self) -> impl Widget;
+
+    fn monthly_expenses_widget(&mut self) -> Vec<(impl Widget, impl Widget)>;
 }
