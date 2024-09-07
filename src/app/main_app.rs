@@ -1,8 +1,11 @@
-#[derive(Debug, serde::Deserialize, serde::Serialize)]
+use super::Entry;
+
+#[derive(serde::Deserialize, serde::Serialize)]
 #[serde(default)]
 pub struct FinhouseApp {
+    pub selected_entry: usize,
+    pub entries: Vec<Entry>,
     pub value: f64,
-    pub value2: u64,
 }
 
 impl FinhouseApp {
@@ -21,8 +24,9 @@ impl FinhouseApp {
 impl Default for FinhouseApp {
     fn default() -> Self {
         Self {
+            entries: vec![Entry::default()],
+            selected_entry: 0,
             value: 1.0,
-            value2: 0,
         }
     }
 }

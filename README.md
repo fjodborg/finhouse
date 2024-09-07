@@ -12,6 +12,8 @@
     - [ ] Housing, mortgage, interest etc
     - [ ] Payments, tax deduction, etc
     - [ ] Other expenses.
-- [ ] Create top bar with tabs for each entry.
+- [x] Create top bar with tabs for each entry.
 - [ ] Add dark and light mode.
 - [ ] Add plot for value over time.
+- [ ] Add readme/tooltip/popup about controls.
+ 

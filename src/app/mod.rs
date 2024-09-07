@@ -1,1 +1,11 @@
-pub mod main_app;
+mod entry;
+mod main_app;
+mod top_bar;
+
+use entry::Entry;
+
+pub mod prelude {
+    pub use super::top_bar::TopBar;
+
+    pub use super::main_app::FinhouseApp;
+}
