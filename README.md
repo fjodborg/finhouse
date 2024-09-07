@@ -16,4 +16,5 @@
 - [ ] Add dark and light mode.
 - [ ] Add plot for value over time.
 - [ ] Add readme/tooltip/popup about controls.
- 
+- [ ] Remove dependency on server being online (Websocket is running).
+- [ ] Support multiple languages.
