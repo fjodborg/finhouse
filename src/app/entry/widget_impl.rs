@@ -19,6 +19,14 @@ impl ParameterWidget for Entry {
             .custom_formatter(move |n, _| format!("{}M {}", n / 1_000_000.0, "Dkk"))
     }
 
+    // TODO: avoid the .0 suffix.
+    fn interest_widget(&mut self) -> impl Widget {
+        DragValue::new(&mut self.interest.0)
+            .range(0.0..=100.0)
+            .speed(0.05)
+            .suffix("%")
+    }
+
     fn name_widget(&mut self) -> impl Widget {
         TextEdit::singleline(&mut self.name)
     }

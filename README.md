@@ -18,3 +18,5 @@
 - [ ] Add readme/tooltip/popup about controls.
 - [ ] Remove dependency on server being online (Websocket is running).
 - [ ] Support multiple languages.
+- [ ] Find a way to avoid double maintenance with the sidebar widgets.
+    - Perhaps base it off a json file. This also makes multiple languages easier.

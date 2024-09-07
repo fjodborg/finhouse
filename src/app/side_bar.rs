@@ -31,6 +31,7 @@ impl SideBar for main_app::FinhouseApp {
                         "Månedlig ydelse før fradrag",
                         entry.monthly_payment_widget(),
                     );
+                    sidebar_widget(ui, "Rente", entry.interest_widget());
                 });
 
             ui.separator();
