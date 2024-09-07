@@ -7,7 +7,7 @@ pub struct Entry {
 impl Default for Entry {
     fn default() -> Self {
         Self {
-            name: "No name".to_owned(),
+            name: "Ikke navngivet".to_owned(),
         }
     }
 }

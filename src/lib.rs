@@ -12,13 +12,13 @@ impl eframe::App for FinhouseApp {
 
     /// Called each time the UI needs repainting, which may be many times per second.
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
-        egui::TopBottomPanel::top("Top Panel").show(ctx, |ui| {
+        egui::TopBottomPanel::top("top_bar").show(ctx, |ui| {
             egui::menu::bar(ui, |ui| {
                 self.create_top_bar(ui);
             });
         });
-        egui::SidePanel::left("Side Panel").show(ctx, |ui| {
-            ui.add(egui::DragValue::new(&mut self.value));
+        egui::SidePanel::left("side_bar").show(ctx, |ui| {
+            self.create_side_panel(ui);
         });
     }
 }
