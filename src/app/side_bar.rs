@@ -21,6 +21,31 @@ impl SideBar for main_app::FinhouseApp {
                     let entry = &mut self.entries[self.selected_entry];
 
                     sidebar_widget(ui, "Tab Navn", egui::TextEdit::singleline(&mut entry.name));
+                    sidebar_widget(
+                        ui,
+                        "Bolig pris",
+                        egui::DragValue::new(&mut entry.house_price),
+                    );
+                    sidebar_widget(
+                        ui,
+                        "Egen udbetaling",
+                        egui::DragValue::new(&mut entry.initial_payment),
+                    );
+                    sidebar_widget(
+                        ui,
+                        "Låneperiode",
+                        egui::DragValue::new(&mut entry.payment_duration),
+                    );
+                    sidebar_widget(
+                        ui,
+                        "Investerings værdi",
+                        egui::DragValue::new(&mut entry.investment),
+                    );
+                    sidebar_widget(
+                        ui,
+                        "Månedlig ydelse før fradrag",
+                        egui::DragValue::new(&mut entry.monthly_payment),
+                    );
                 });
 
             ui.separator();

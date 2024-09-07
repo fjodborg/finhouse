@@ -11,4 +11,9 @@ mod prelude {
 pub struct Entry {
     // #[serde(skip)]
     pub name: String,
+    pub house_price: u64,
+    pub initial_payment: u64,
+    pub payment_duration: u32,
+    pub investment: u64,
+    pub monthly_payment: u64,
 }
