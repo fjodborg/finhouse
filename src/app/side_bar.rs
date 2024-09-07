@@ -22,6 +22,18 @@ impl SideBar for main_app::FinhouseApp {
 
                     sidebar_widget(ui, "Tab Navn", egui::TextEdit::singleline(&mut entry.name));
                 });
+
+            ui.separator();
+            egui::warn_if_debug_build(ui);
+            source_code(ui);
         });
     }
+}
+
+fn source_code(ui: &mut egui::Ui) {
+    ui.horizontal(|ui| {
+        ui.spacing_mut().item_spacing.x = 0.0;
+        ui.label("Source code: ");
+        ui.hyperlink_to("github", "https://github.com/fjodborg/finhouse");
+    });
 }
