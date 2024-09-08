@@ -71,8 +71,8 @@ impl Default for Entry {
             value_increase: Percentage(2.0),
 
             // Interest.
-            interest: Percentage(4.0),
-            interest_deduction: Percentage(0.0),
+            interest: Percentage(4.6),
+            interest_deduction: Percentage(20.6),
             monthly_payment: 10000,
 
             // Investment.
