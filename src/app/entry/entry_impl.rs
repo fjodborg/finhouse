@@ -1,6 +1,7 @@
 use super::prelude::*;
 
 impl Entry {
+    // TODO: Find a better place for this function.
     /// Calculates how much needs to be paid to pay off the debt before the specified years.
     pub fn calculate_monthly_payment(loan: f64, years: f64, interest_per: Percentage) -> f64 {
         let interest: f64 = interest_per.into();
@@ -11,6 +12,7 @@ impl Entry {
         yearly_payment / 12.0
     }
 
+    // TODO: Find a better place for this function.
     pub fn calculate_payment_duration(
         loan: f64,
         monthly_payment: f64,
@@ -23,36 +25,57 @@ impl Entry {
         ((yearly_payment / (yearly_payment - loan * interest)).ln()) / ((1.0 + interest).ln())
     }
 
+    // TODO: Find a better place for this function.
     fn calculate_new_loan(&self, loan: f64, yearly_payment: f64) -> f64 {
-        // TODO: Needs rework.
         let interest: f64 = self.interest.into();
-        // let interest_deduction: f64 = self.interest_deduction.into();
-
         let d_loan = loan * interest;
-        // let tax_deduction = d_loan * interest_deduction;
-        // let yearly_payment = (self.monthly_payment * 12) as f64;
-        // println!("{} {} {} {}", loan, d_loan, yearly_payment, tax_deduction);
 
         loan + d_loan - yearly_payment
     }
 
+    fn calculate_stock_gains(&self, years: f64) -> f64 {
+        let gains: f64 = self.investment_gain.into();
+        let investment = self.investment as f64;
+        investment * (1.0 + gains).powf(years)
+    }
+
     pub fn data_points(&self, years: u32) -> egui_plot::Line {
         let range = 0..=years;
+
         let loan = (self.house_price - self.initial_payment) as f64;
         let years = self.payment_duration as f64;
         let yearly_payment = 12.0 * Self::calculate_monthly_payment(loan, years, self.interest);
-        let series = range
+
+        // Loan and payment is negative money.
+        let loan = -loan;
+        let yearly_payment = -yearly_payment;
+
+        // TODO: Needs to handle monthly payment after house is paid off somehow.
+        // Maybe the solution is to just not check if loan is < 0.0, since a persons "net-worth" still increases.
+
+        // Calculate the loan payment.
+        let series: Vec<_> = range
             .scan(loan as f64, |remaining_loan, i| {
                 // TODO: Find a more rustic way to do this.
-                if i == 0 {
-                    return Some([i as f64, loan]);
+                if i != 0 && *remaining_loan < 0.0 {
+                    *remaining_loan = self.calculate_new_loan(*remaining_loan, yearly_payment);
                 }
-                let loan = self.calculate_new_loan(*remaining_loan, yearly_payment);
-                *remaining_loan = loan;
-                Some([i as f64, loan])
+
+                Some([i as f64, *remaining_loan])
             })
-            .collect::<egui_plot::PlotPoints>();
-        egui_plot::Line::new(series)
+            .collect();
+
+        // Apply the stock gains.
+        let series = series
+            .into_iter()
+            .map(|[i, loan]| {
+                let value = self.calculate_stock_gains(i);
+                [i, loan + value]
+            })
+            .collect();
+
+        let final_series: egui_plot::PlotPoints = series;
+        egui_plot::Line::new(final_series)
     }
 }
 
