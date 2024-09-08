@@ -55,7 +55,9 @@ impl TopBar for main_app::FinhouseApp {
                                     self.entries.push(Entry::default());
                                 }
                                 // Handle if selected entry is after deleted tab.
-                                else if self.selected_entry > remove_tab {
+                                else if self.selected_entry >= remove_tab
+                                    && self.selected_entry != 0
+                                {
                                     self.selected_entry -= 1;
                                 }
                                 self.entries.remove(remove_tab);
