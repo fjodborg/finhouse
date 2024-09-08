@@ -84,6 +84,12 @@ impl ParameterWidget for Entry {
             monthly_payment *= 1.0 - interest_deduction;
         });
 
+        // Add all expenses to it.
+        monthly_payment += self
+            .monthly_expenses
+            .iter()
+            .fold(0.0, |acc, x| acc + x.value as f64);
+
         // TODO: Make more generic custom parser. for easier reuse.
         let default_multi = &1.0;
 
@@ -146,6 +152,7 @@ impl ParameterWidget for Entry {
     }
 
     fn monthly_expenses_widget(&mut self) -> Vec<(impl Widget, impl Widget)> {
+        let default_multi = 1.0;
         self.monthly_expenses
             .iter_mut()
             .map(|e| {
@@ -154,7 +161,11 @@ impl ParameterWidget for Entry {
                 let value = DragValue::new(&mut e.value)
                     .range(0.0..=100_000.0)
                     .speed(10)
-                    .custom_formatter(move |n, _| format!("{} {}", n, "Dkk"));
+                    .custom_formatter(move |n, _| format!("{} {}", n, "Dkk"))
+                    .custom_parser(move |s| {
+                        let (amount, multiplier, _) = string_parse_helper(s).ok()?;
+                        Some(amount * multiplier.unwrap_or(default_multi))
+                    });
 
                 (label, value)
             })

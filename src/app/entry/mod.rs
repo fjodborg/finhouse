@@ -22,7 +22,6 @@ pub struct Entry {
     interest_deduction: Percentage,
     value_increase: Percentage,
 
-    monthly_payment: u64,
     payment_duration: u32,
 
     investment: u64,
