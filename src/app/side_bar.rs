@@ -45,7 +45,7 @@ fn sidebar_content(ui: &mut Ui, entry: &mut Entry) {
     ui.end_row();
     sidebar_widget(ui, "Tab Navn", entry.name_widget());
     sidebar_widget(ui, "Bolig pris", entry.house_price_widget());
-    sidebar_widget(ui, "Egen udbetaling", entry.initial_payment_widget());
+    sidebar_widget(ui, "Egen betaling", entry.initial_payment_widget());
     sidebar_widget(ui, "Årlig værdi stigning", entry.value_increase_widget());
 
     ui.label("");
@@ -58,12 +58,12 @@ fn sidebar_content(ui: &mut Ui, entry: &mut Entry) {
     sidebar_widget(ui, "Låneperiode", entry.payment_duration_widget());
     sidebar_widget(
         ui,
-        "Månedlig ydelse før fradrag",
+        "Rådighedsbeløb før fradrag",
         entry.monthly_payment_widget(false),
     );
     sidebar_widget(
         ui,
-        "Månedlig ydelse efter fradrag",
+        "Rådighedsbeløb efter fradrag",
         entry.monthly_payment_widget(true),
     );
 

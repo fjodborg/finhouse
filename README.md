@@ -27,3 +27,8 @@
 - [ ] Support multiple languages.
 - [ ] Find a way to avoid double maintenance with the sidebar widgets.
     - Perhaps base it off a json file. This also makes multiple languages easier.
+- [ ] Add "Kurs tab", i don't know the english world.
+
+## Ideas
+
+- [ ] Remove Percentage type and just use f64 with a custom formatter for egui.
