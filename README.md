@@ -18,10 +18,14 @@
     - [X] Housing, mortgage, interest etc
     - [X] Payments, tax deduction, etc
     - [X] Other expenses.
+- [ ] Add inflation.
 - [x] Create top bar with tabs for each entry.
 - [ ] Add dark and light mode.
 - [X] Add plot for value over time.
     - [ ] Add proper utilities, like checkboxes etc.
+    - [ ] Add suffix to numbers.
+    - [ ] Add "legend" with minimum payment on the plot for each line.
+    - [ ] Add option to "Offset" plot with house value. 
 - [ ] Add readme/tooltip/popup about controls.
 - [ ] Remove dependency on server being online (Websocket is running).
 - [ ] Support multiple languages.
