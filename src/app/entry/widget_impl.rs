@@ -12,7 +12,7 @@ impl ParameterWidget for Entry {
     fn house_price_widget(&mut self) -> impl Widget {
         // TODO: Make more generic custom parser. for easier reuse.
         let default_multi = 1e6;
-        DragValue::new(&mut self.house_price)
+        DragValue::new(&mut self.loan.house_price)
             .range(0.0..=1_000_000_000.0)
             .speed(20_000)
             .custom_formatter(move |n, _| format!("{}M {}", n / default_multi, "Dkk"))
@@ -24,7 +24,7 @@ impl ParameterWidget for Entry {
 
     fn income_widget(&mut self) -> impl Widget {
         // TODO: Make more generic custom parser. for easier reuse.
-        let default_multi: f64 = 1.0;
+        let default_multi = 1.0;
         DragValue::new(&mut self.income)
             .range(0.0..=1_000_000.0)
             .speed(100)
@@ -38,9 +38,8 @@ impl ParameterWidget for Entry {
     fn initial_payment_widget(&mut self) -> impl Widget {
         // TODO: Make more generic custom parser. for easier reuse.
         let default_multi = &1e6;
-        let house_price = self.house_price as f64;
-        DragValue::new(&mut self.initial_payment)
-            .range(0.0..=house_price)
+        DragValue::new(&mut self.loan.initial_payment)
+            .range(0.0..=self.loan.house_price)
             .speed(20_000)
             .custom_formatter(move |n, _| format!("{}M {}", n / default_multi, "Dkk"))
             .custom_parser(|s| {
@@ -54,51 +53,53 @@ impl ParameterWidget for Entry {
     }
 
     fn payment_duration_widget(&mut self) -> impl Widget {
-        DragValue::new(&mut self.payment_duration)
+        DragValue::new(&mut self.loan.duration)
             .range(1..=100)
             .speed(0.1)
-            .suffix(" År")
+            .custom_formatter(|n, _| format!("{} År", n.round()))
+            .custom_parser(|s| Some(s.parse::<f64>().ok()?.round()))
     }
 
     fn value_increase_widget(&mut self) -> impl Widget {
-        DragValue::new(&mut self.value_increase.0)
+        DragValue::new(&mut self.value_increase)
             .range(-100.0..=10_000.0)
             .speed(0.05)
-            .suffix("%")
+            .custom_formatter(move |n, _| format!("{:.2}%", n * 100.0))
+            .custom_parser(|s| Some(s.parse::<f64>().ok()? / 100.0))
     }
 
     // TODO: avoid the .0 suffix.
     fn interest_widget(&mut self) -> impl Widget {
-        DragValue::new(&mut self.interest.0)
-            .range(0.0..=100.0)
-            .speed(0.05)
-            .suffix("%")
+        DragValue::new(&mut self.loan.interest)
+            .range(0.0..=1.0)
+            .speed(0.0005)
+            .custom_formatter(move |n, _| format!("{:.2}%", n * 100.0))
+            .custom_parser(|s| Some(s.parse::<f64>().ok()? / 100.0))
     }
 
     // TODO: avoid the .0 suffix.
     fn interest_deduction_widget(&mut self) -> impl Widget {
-        DragValue::new(&mut self.interest_deduction.0)
-            .range(0.0..=100.0)
-            .speed(0.05)
-            .suffix("%")
+        DragValue::new(&mut self.loan.interest_deduction)
+            .range(0.0..=1.0)
+            .speed(0.0005)
+            .custom_formatter(move |n, _| format!("{:.2}%", n * 100.0))
+            .custom_parser(|s| Some(s.parse::<f64>().ok()? / 100.0))
     }
 
     // Will affect loan duration.
     fn monthly_payment_widget(&mut self, after_tax: bool) -> impl Widget {
         use log::warn;
-        let years = (self.payment_duration) as f64;
-        let loan = (self.house_price - self.initial_payment) as f64;
+        let loan = self.loan.get_loan();
 
         if loan < 0.0 {
             warn!("Impossible scenario occurred. This should have been handled in the initial_payment section. Doing workaround");
-            self.initial_payment = self.house_price;
+            self.loan.initial_payment = self.loan.house_price;
         }
-        let mut monthly_payment = Entry::calculate_monthly_payment(loan, years, self.interest);
+        let mut monthly_payment = self.loan.get_monthly_payment();
 
         // Scale with deduction if present.
         after_tax.then(|| {
-            let interest_deduction: f64 = self.interest_deduction.into();
-            monthly_payment *= 1.0 - interest_deduction;
+            monthly_payment *= 1.0 - self.loan.interest_deduction;
         });
 
         // Add all expenses to it.
@@ -111,30 +112,30 @@ impl ParameterWidget for Entry {
         let default_multi = &1.0;
 
         // Create copies that gets moved into the parser.
-        let interest = self.interest;
-        let interest_deduction = self.interest_deduction;
+        let interest = self.loan.interest;
+        let interest_deduction = self.loan.interest_deduction;
 
         // Okay so this is a bit weird. Since it represents years but as money payed per month.
         // Therefore speed is negative. The deduction is divided etc.
         // TODO: Clean this mess up. It needs to be rethought.
-        DragValue::new(&mut self.payment_duration)
+        DragValue::new(&mut self.loan.duration)
             .range(1.0..=1_000_000.0)
             .speed(-0.2) // Reverse direction.
             .custom_formatter(move |_, _| format!("{} {}", monthly_payment.round(), "Dkk"))
             .custom_parser(move |s| {
-                let loan = loan;
-
                 // Extract value from string.
-                let (amount, multiplier, _) = string_parse_helper(s).ok()?;
-                let mut amount = amount * multiplier.unwrap_or(*default_multi);
+                let (mut payment, multiplier, _) = string_parse_helper(s).ok()?;
+                payment *= multiplier.unwrap_or(*default_multi);
 
                 // Scale the value according to if it is after or before tax deduction.
                 after_tax.then(|| {
                     let interest_deduction: f64 = interest_deduction.into();
-                    amount /= 1.0 - interest_deduction;
+                    payment /= 1.0 - interest_deduction;
                 });
 
-                let years = Entry::calculate_payment_duration(loan, amount, interest);
+                let yearly_payment = payment * 12.0;
+
+                let years = super::utility::calculate_years(loan, yearly_payment, interest);
                 Some(years)
             })
     }

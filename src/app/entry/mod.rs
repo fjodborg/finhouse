@@ -5,7 +5,7 @@ mod utility;
 
 use egui::Widget;
 
-pub use super::entry::utility::{MultiLines, Percentage};
+pub use super::entry::utility::{Loan, MultiLines, Percentage};
 // Prelude to make it easier to split into multiple files but having access like it was one file.
 mod prelude {
     pub use super::Entry;
@@ -16,15 +16,9 @@ mod prelude {
 pub struct Entry {
     // #[serde(skip)]
     pub name: String,
-    house_price: i64,
-    initial_payment: i64,
     income: i64,
-    interest: Percentage,
-    interest_deduction: Percentage,
-    value_increase: Percentage,
-
-    payment_duration: u32,
-
+    loan: Loan,
+    value_increase: f64,
     investment: u64,
     investment_gain: Percentage,
     investment_tax: Percentage,

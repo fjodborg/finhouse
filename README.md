@@ -1,5 +1,7 @@
 # finhouse
 
+This is just a hobby project that i did for fun. The purpose is to get a better overview of owning and taking a loan for housing.
+
 ## Usage
 
 * You can use suffixes K(1,000) and M(1,000,000) to specify units. If not specified it uses the default one.
@@ -19,6 +21,8 @@
     - [X] Payments, tax deduction, etc
     - [X] Other expenses.
 - [ ] Add inflation.
+- [ ] Add total interest paid. 
+- [ ] Add total expenses paid for each expense. (box plot?)
 - [x] Create top bar with tabs for each entry.
 - [ ] Add dark and light mode.
 - [X] Add plot for value over time.
