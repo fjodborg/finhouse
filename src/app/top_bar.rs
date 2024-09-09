@@ -9,6 +9,9 @@ impl TopBar for main_app::FinhouseApp {
     fn create_top_bar(&mut self, ui: &mut egui::Ui) {
         ui.with_layout(egui::Layout::right_to_left(egui::Align::TOP), |ui| {
             // TODO: Make this depend on font size.
+            egui::widgets::global_dark_light_mode_buttons(ui);
+            ui.separator();
+
             // Add a small buffer for scrollbar.
             ui.set_height(24.0);
 
