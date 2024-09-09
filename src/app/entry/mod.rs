@@ -18,6 +18,7 @@ pub struct Entry {
     pub name: String,
     house_price: i64,
     initial_payment: i64,
+    income: i64,
     interest: Percentage,
     interest_deduction: Percentage,
     value_increase: Percentage,
@@ -35,7 +36,9 @@ pub trait ParameterWidget {
     fn name_widget(&mut self) -> impl Widget;
     fn house_price_widget(&mut self) -> impl Widget;
     fn initial_payment_widget(&mut self) -> impl Widget;
+    fn available_amount_widget(&mut self) -> impl Widget;
     fn payment_duration_widget(&mut self) -> impl Widget;
+    fn income_widget(&mut self) -> impl Widget;
     fn value_increase_widget(&mut self) -> impl Widget;
 
     fn interest_widget(&mut self) -> impl Widget;

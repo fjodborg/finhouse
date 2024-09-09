@@ -22,6 +22,19 @@ impl ParameterWidget for Entry {
             })
     }
 
+    fn income_widget(&mut self) -> impl Widget {
+        // TODO: Make more generic custom parser. for easier reuse.
+        let default_multi: f64 = 1.0;
+        DragValue::new(&mut self.income)
+            .range(0.0..=1_000_000.0)
+            .speed(100)
+            .custom_formatter(move |n, _| format!("{} {}", n / default_multi, "Dkk"))
+            .custom_parser(move |s| {
+                let (amount, multiplier, _) = string_parse_helper(s).ok()?;
+                Some(amount * multiplier.unwrap_or(default_multi))
+            })
+    }
+
     fn initial_payment_widget(&mut self) -> impl Widget {
         // TODO: Make more generic custom parser. for easier reuse.
         let default_multi = &1e6;
@@ -34,6 +47,10 @@ impl ParameterWidget for Entry {
                 let (amount, multiplier, _) = string_parse_helper(s).ok()?;
                 Some(amount * multiplier.unwrap_or(*default_multi))
             })
+    }
+
+    fn available_amount_widget(&mut self) -> impl Widget {
+        egui::Label::new("TODO")
     }
 
     fn payment_duration_widget(&mut self) -> impl Widget {
@@ -85,10 +102,10 @@ impl ParameterWidget for Entry {
         });
 
         // Add all expenses to it.
-        monthly_payment += self
-            .monthly_expenses
-            .iter()
-            .fold(0.0, |acc, x| acc + x.value as f64);
+        // monthly_payment += self
+        //     .monthly_expenses
+        //     .iter()
+        //     .fold(0.0, |acc, x| acc + x.value as f64);
 
         // TODO: Make more generic custom parser. for easier reuse.
         let default_multi = &1.0;

@@ -46,41 +46,61 @@ fn sidebar_content(ui: &mut Ui, entry: &mut Entry) {
     sidebar_widget(ui, "Tab Navn", entry.name_widget());
     sidebar_widget(ui, "Bolig pris", entry.house_price_widget());
     sidebar_widget(ui, "Egen betaling", entry.initial_payment_widget());
-    sidebar_widget(ui, "Årlig værdi stigning", entry.value_increase_widget());
+
+    // TODO: Add inflation
+    // TODO: Readd this, once properly implemented.
+    // sidebar_widget(ui, "Årlig værdi stigning", entry.value_increase_widget());
 
     ui.label("");
     ui.end_row();
     ui.heading("Rente:");
     ui.end_row();
 
-    sidebar_widget(ui, "Rente", entry.interest_widget());
+    sidebar_widget(ui, "Rente [ÅOP]", entry.interest_widget());
     sidebar_widget(ui, "Rentefradrag", entry.interest_deduction_widget());
     sidebar_widget(ui, "Låneperiode", entry.payment_duration_widget());
     sidebar_widget(
         ui,
-        "Rådighedsbeløb før fradrag",
+        "Ydelse før fradrag",
         entry.monthly_payment_widget(false),
     );
     sidebar_widget(
         ui,
-        "Rådighedsbeløb efter fradrag",
+        "Ydelse efter fradrag",
         entry.monthly_payment_widget(true),
     );
 
     // TODO: find a proper solution to get stripes to work.
     ui.label("");
     ui.end_row();
-    ui.heading("Aktier:");
+    ui.heading("Diverse");
     ui.end_row();
-    sidebar_widget(ui, "Investerings værdi", entry.investments_widget());
-    sidebar_widget(ui, "Forventet afkast", entry.investments_gain_widget());
-    sidebar_widget(ui, "Aktie skat", entry.investments_tax_widget());
+    sidebar_widget(ui, "Indkomst efter skat", entry.income_widget());
+    sidebar_widget(
+        ui,
+        "Rådighedsbeløb efter skat",
+        entry.available_amount_widget(),
+    );
+    sidebar_widget(ui, "Formue + værdi", egui::Label::new("TODO"));
+    sidebar_widget(ui, "Penge betalt til rente", egui::Label::new("TODO"));
+    // sidebar_widget(ui, "", egui::Label::new("TODO"));
 
+    ui.label("");
     ui.end_row();
+
+    // TODO: Readd this, once loan stop is properly implemented.
+    // ui.heading("Aktier:");
+    // ui.end_row();
+    // sidebar_widget(ui, "Investerings værdi", entry.investments_widget());
+    // sidebar_widget(ui, "Forventet afkast", entry.investments_gain_widget());
+    // sidebar_widget(ui, "Aktie skat", entry.investments_tax_widget());
+    // ui.end_row();
+
     ui.heading("Månedlige Udgifter:");
     ui.end_row();
     sidebar_multi_widget(ui, entry.monthly_expenses_widget());
 
+    ui.label("");
     ui.end_row();
     if ui.button("Ryd udgifter!").highlight().clicked() {
         // new_entry = true;

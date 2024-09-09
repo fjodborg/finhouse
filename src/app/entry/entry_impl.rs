@@ -1,5 +1,31 @@
 use super::prelude::*;
 
+impl Default for Entry {
+    fn default() -> Self {
+        Self {
+            // House.
+            name: "Ikke navngivet".to_owned(),
+            house_price: 0,
+            initial_payment: 0,
+            payment_duration: 30,
+            income: 30000,
+            value_increase: Percentage(2.0),
+
+            // Interest.
+            interest: Percentage(4.6),
+            interest_deduction: Percentage(20.6),
+
+            // Investment.
+            investment: 0,
+            investment_gain: Percentage(10.0),
+            investment_tax: Percentage(42.0),
+
+            // Expenses.
+            monthly_expenses: vec![],
+        }
+    }
+}
+
 impl Entry {
     // TODO: Find a better place for this function.
     /// Calculates how much needs to be paid to pay off the debt before the specified years.
@@ -57,7 +83,7 @@ impl Entry {
         let series: Vec<_> = range
             .scan(loan as f64, |remaining_loan, i| {
                 // TODO: Find a more rustic way to do this.
-                if i != 0 && *remaining_loan < 0.0 {
+                if i != 0 && *remaining_loan < -1.0 {
                     *remaining_loan = self.calculate_new_loan(*remaining_loan, yearly_payment);
                 }
 
@@ -76,31 +102,6 @@ impl Entry {
 
         let final_series: egui_plot::PlotPoints = series;
         egui_plot::Line::new(final_series)
-    }
-}
-
-impl Default for Entry {
-    fn default() -> Self {
-        Self {
-            // House.
-            name: "Ikke navngivet".to_owned(),
-            house_price: 0,
-            initial_payment: 0,
-            payment_duration: 30,
-            value_increase: Percentage(2.0),
-
-            // Interest.
-            interest: Percentage(4.6),
-            interest_deduction: Percentage(20.6),
-
-            // Investment.
-            investment: 0,
-            investment_gain: Percentage(10.0),
-            investment_tax: Percentage(42.0),
-
-            // Expenses.
-            monthly_expenses: vec![],
-        }
     }
 }
 
