@@ -1,3 +1,5 @@
 [submodule "dist"]
 	path = dist
 	url = git@github.com:fjodborg/finhouse_page.git
+    branch = main
+ 
