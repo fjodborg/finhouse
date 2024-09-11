@@ -30,7 +30,7 @@ impl Entry {
 
             // Investment.
             investment: 0,
-            investment_gain: Percentage(10.0),
+            investment_gain: Percentage(5.0),
             investment_tax: Percentage(42.0),
 
             // Expenses.

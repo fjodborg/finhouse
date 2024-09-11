@@ -34,6 +34,42 @@ impl Default for FinhouseApp {
         let mut entry1 = Entry::new(plot_years.clone());
         let mut entry2 = Entry::new(plot_years.clone());
 
+        // Setup buying scenario.
+        entry1.name = "Bolig".into();
+        entry1.loan.house_price = 3_000_000.0;
+        entry1.loan.initial_payment = 400_000.0;
+        entry1.investment = 0;
+        entry1.income = 35000;
+        entry1.monthly_expenses = vec![
+            MultiLines::new("Ejerudgift", 2500),
+            MultiLines::new("Vedligehold", 1000),
+            MultiLines::new("Bil", 3000),
+            MultiLines::new("Varme", 500),
+            MultiLines::new("Vand", 400),
+            MultiLines::new("Mad", 3000),
+            MultiLines::new("Internet", 300),
+            MultiLines::new("Mobil", 200),
+            MultiLines::new("Forsikring og akasse", 1000),
+            MultiLines::new("Streaming", 200),
+        ];
+
+        // Setup renting scenario.
+        entry2.name = "Leje".into();
+        entry2.loan.house_price = 0.0;
+        entry2.loan.initial_payment = 0.0;
+        entry2.income = 35000;
+        entry2.investment = 400000;
+
+        entry2.monthly_expenses = vec![
+            MultiLines::new("Leje", 8500),
+            MultiLines::new("Acconto", 750),
+            MultiLines::new("Mad", 3000),
+            MultiLines::new("Internet", 300),
+            MultiLines::new("Mobil", 200),
+            MultiLines::new("Forsikring og akasse", 1000),
+            MultiLines::new("Streaming", 200),
+        ];
+
         Self {
             entries: vec![entry1, entry2],
             selected_entry: 0,

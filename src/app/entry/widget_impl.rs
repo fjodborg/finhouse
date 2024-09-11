@@ -114,19 +114,20 @@ impl ParameterWidget for Entry {
         let total_amount = years * yearly_available_amount;
         let house_price = self.loan.house_price;
 
-        let stock_gain = {
-            let investment = self.investment as f64;
+        let investment = self.investment as f64;
+        let stock_gain = investment + {
             let interest: f64 = self.investment_gain.into();
             let tax: f64 = self.investment_tax.into();
             let gain = investment * (1.0 + interest).powf(years);
             let delta = gain - investment;
+            // TODO: Maybe reconsider this? A match or if seems more readable.
             (delta > 0.0).then(|| delta * tax).unwrap_or(delta)
         };
 
         let value_networth = total_amount + house_price + stock_gain;
         let scale = 1e6;
 
-        let text = egui::RichText::new(format!("{:.0}M {}", value_networth / scale, "Dkk"))
+        let text = egui::RichText::new(format!("{:.2}M {}", value_networth / scale, "Dkk"))
             .strong()
             .underline();
         egui::Label::new(text)
@@ -224,7 +225,7 @@ impl ParameterWidget for Entry {
         // TODO: Make more generic custom parser. for easier reuse.
         let default_multi = 1e3;
         DragValue::new(&mut self.investment)
-            .range(0.0..=1_000_000.0)
+            .range(0.0..=100_000_000.0)
             .speed(100)
             .custom_formatter(move |n, _| format!("{}K {}", n / 1_000.0, "Dkk"))
             .custom_parser(move |s| {
