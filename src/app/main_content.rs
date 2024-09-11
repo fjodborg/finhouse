@@ -1,4 +1,4 @@
-use super::main_app::FinhouseApp;
+use super::finhouse::FinhouseApp;
 
 pub trait MainContent {
     fn create_main_content(&mut self, ui: &mut egui::Ui);
@@ -7,6 +7,10 @@ pub trait MainContent {
 impl MainContent for FinhouseApp {
     fn create_main_content(&mut self, ui: &mut egui::Ui) {
         ui.heading("finhouse");
+        ui.horizontal(|ui| {
+            ui.add(egui::Label::new("Antal år at basere tallende og plot på"));
+            ui.add(egui::DragValue::new(&mut self.plot_years).suffix(" År"));
+        });
 
         egui_plot::Plot::new("my_plot")
             .view_aspect(2.0)

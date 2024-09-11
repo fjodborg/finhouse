@@ -1,5 +1,5 @@
 mod entry;
-mod main_app;
+mod finhouse;
 mod main_content;
 mod side_bar;
 mod top_bar;
@@ -11,5 +11,5 @@ pub mod prelude {
     pub use super::side_bar::SideBar;
     pub use super::top_bar::TopBar;
 
-    pub use super::main_app::FinhouseApp;
+    pub use super::finhouse::FinhouseApp;
 }

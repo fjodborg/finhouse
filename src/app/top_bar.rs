@@ -1,11 +1,11 @@
-use super::{main_app, Entry};
+use super::{finhouse, Entry};
 
 pub trait TopBar {
     /// Create the top bar.
     fn create_top_bar(&mut self, ui: &mut egui::Ui);
 }
 
-impl TopBar for main_app::FinhouseApp {
+impl TopBar for finhouse::FinhouseApp {
     fn create_top_bar(&mut self, ui: &mut egui::Ui) {
         ui.with_layout(egui::Layout::right_to_left(egui::Align::TOP), |ui| {
             // TODO: Make this depend on font size.

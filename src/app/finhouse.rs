@@ -5,7 +5,7 @@ use super::Entry;
 pub struct FinhouseApp {
     pub selected_entry: usize,
     pub entries: Vec<Entry>,
-    pub value: f64,
+    pub plot_years: f64,
 }
 
 impl FinhouseApp {
@@ -26,7 +26,7 @@ impl Default for FinhouseApp {
         Self {
             entries: vec![Entry::default()],
             selected_entry: 0,
-            value: 1.0,
+            plot_years: 50.0,
         }
     }
 }

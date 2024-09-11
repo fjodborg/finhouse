@@ -1,12 +1,12 @@
 use super::entry::{Entry, MultiLines, ParameterWidget};
-use super::main_app;
+use super::finhouse;
 use egui::{Label, Ui, Widget};
 
 pub trait SideBar {
     fn create_side_panel(&mut self, ui: &mut Ui);
 }
 
-impl SideBar for main_app::FinhouseApp {
+impl SideBar for finhouse::FinhouseApp {
     fn create_side_panel(&mut self, ui: &mut Ui) {
         egui::ScrollArea::vertical().show(ui, |ui| {
             egui::Grid::new("side_bar")
@@ -82,7 +82,14 @@ fn sidebar_content(ui: &mut Ui, entry: &mut Entry) {
         entry.available_amount_widget(),
     );
     sidebar_widget(ui, "Formue + værdi", egui::Label::new("TODO"));
-    sidebar_widget(ui, "Penge betalt til rente", egui::Label::new("TODO"));
+    sidebar_widget(ui, "Penge betalt til rente", entry.money_paid_widget(true));
+    sidebar_widget(ui, "Penge betalt for bolig", entry.money_paid_widget(false));
+    sidebar_widget(
+        ui,
+        "Penge betalt for alt",
+        entry.money_paid_and_expenses_widget(),
+    );
+
     // sidebar_widget(ui, "", egui::Label::new("TODO"));
 
     ui.label("");

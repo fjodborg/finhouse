@@ -49,7 +49,69 @@ impl ParameterWidget for Entry {
     }
 
     fn available_amount_widget(&mut self) -> impl Widget {
-        egui::Label::new("TODO")
+        // TODO: Make more generic custom parser. for easier reuse.
+
+        let summed_monthly_expenses = self
+            .monthly_expenses
+            .iter()
+            .fold(0.0, |acc, x| acc + x.value as f64);
+
+        let monthly_payment_after_deduction =
+            self.loan.get_monthly_payment() * (1.0 - self.loan.interest_deduction);
+
+        let total_monthly_payment = summed_monthly_expenses + monthly_payment_after_deduction;
+        let available_amount = self.income as f64 - total_monthly_payment;
+
+        // TODO: Make a method/custom widget for this specific setup.
+        let text = egui::RichText::new(format!("{:.0} {}", available_amount, "Dkk"))
+            .strong()
+            .underline();
+        egui::Label::new(text)
+    }
+
+    fn money_paid_widget(&mut self, only_interest: bool) -> impl Widget {
+        // Payment after deduction.
+        let monthly_payment =
+            self.loan.get_monthly_payment() * (1.0 - self.loan.interest_deduction);
+
+        let yearly_payment = 12.0 * monthly_payment;
+
+        let mut money_paid_for_house = yearly_payment * self.loan.duration;
+
+        only_interest.then(|| money_paid_for_house -= self.loan.get_loan());
+
+        // TODO: Make a method/custom widget for this specific setup.
+        let scale = 1e6;
+        let text = egui::RichText::new(format!("{:0.2}M {}", money_paid_for_house / scale, "Dkk"))
+            .strong()
+            .underline();
+        egui::Label::new(text)
+    }
+
+    fn money_paid_and_expenses_widget(&mut self) -> impl Widget {
+        // Payment after deduction.
+        let monthly_payment =
+            self.loan.get_monthly_payment() * (1.0 - self.loan.interest_deduction);
+
+        let yearly_payment = 12.0 * monthly_payment;
+
+        let money_paid_for_house = yearly_payment * self.loan.duration;
+
+        let summed_monthly_expenses = self
+            .monthly_expenses
+            .iter()
+            .fold(0.0, |acc, x| acc + x.value as f64);
+        let summed_yearly_expenses = 12.0 * summed_monthly_expenses;
+        let summed_expenses = summed_yearly_expenses * self.loan.duration;
+
+        let money_paid = money_paid_for_house + summed_expenses;
+
+        // TODO: Make a method/custom widget for this specific setup.
+        let scale = 1e6;
+        let text = egui::RichText::new(format!("{:0.2}M {}", money_paid / scale, "Dkk"))
+            .strong()
+            .underline();
+        egui::Label::new(text)
     }
 
     fn payment_duration_widget(&mut self) -> impl Widget {
