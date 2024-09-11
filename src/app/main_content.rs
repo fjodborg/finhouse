@@ -1,4 +1,4 @@
-use super::finhouse::FinhouseApp;
+use super::FinhouseApp;
 
 pub trait MainContent {
     fn create_main_content(&mut self, ui: &mut egui::Ui);
@@ -6,19 +6,44 @@ pub trait MainContent {
 
 impl MainContent for FinhouseApp {
     fn create_main_content(&mut self, ui: &mut egui::Ui) {
-        ui.heading("finhouse");
+        ui.heading("Finhouse.");
         ui.horizontal(|ui| {
-            ui.add(egui::Label::new("Antal år at basere tallende og plot på"));
-            ui.add(egui::DragValue::new(&mut self.plot_years).suffix(" År"));
+            ui.vertical(|ui| {
+                ui.add(egui::Label::new(
+                    "Antal år at basere plot m.m. på (Kan ikke gå under største låneperiode):",
+                ));
+                let plot_years: &mut u32 = &mut self.plot_years.borrow_mut();
+
+                // Find the maximum year of all entries.
+                let max_years = self
+                    .entries
+                    .iter()
+                    .map(|x| x.loan.duration)
+                    .reduce(f64::max)
+                    .unwrap_or(1.0)
+                    .round();
+
+                ui.add(
+                    egui::DragValue::new(plot_years)
+                        .suffix(" År")
+                        .range(max_years..=100.0)
+                        .speed(0.1),
+                );
+            });
         });
 
+        ui.vertical_centered(|ui| {
+            ui.heading("Lån over tid.");
+        });
         egui_plot::Plot::new("my_plot")
             .view_aspect(2.0)
-            // TODO: Allow these.
             .allow_drag(false)
             .allow_zoom(false)
             .allow_scroll(false)
             .allow_boxed_zoom(false)
+            .x_axis_label("År")
+            .y_axis_label("Million Dkk")
+            .y_axis_min_width(40.0)
             .legend(
                 egui_plot::Legend::default()
                     .background_alpha(0.75)
@@ -26,9 +51,10 @@ impl MainContent for FinhouseApp {
                     .text_style(egui::TextStyle::Body),
             )
             .show(ui, |plot_ui| {
+                let scale = 1e6;
                 for (i, entry) in self.entries.iter().enumerate() {
                     // TODO: Add slider for max years.
-                    let line = entry.data_points(50);
+                    let line = entry.data_points(*self.plot_years.borrow(), scale);
                     plot_ui.line(line.name(format!("{} {}", i, entry.name)));
                 }
             });

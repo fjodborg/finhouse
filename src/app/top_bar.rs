@@ -5,7 +5,7 @@ pub trait TopBar {
     fn create_top_bar(&mut self, ui: &mut egui::Ui);
 }
 
-impl TopBar for finhouse::FinhouseApp {
+impl TopBar for super::FinhouseApp {
     fn create_top_bar(&mut self, ui: &mut egui::Ui) {
         ui.with_layout(egui::Layout::right_to_left(egui::Align::TOP), |ui| {
             // TODO: Make this depend on font size.
@@ -21,7 +21,7 @@ impl TopBar for finhouse::FinhouseApp {
                     if ui.button("Ny Bolig!").highlight().clicked() {
                         // TODO, find a more idiomatic way to do this.
                         self.selected_entry = self.entries.len();
-                        self.entries.push(Entry::default());
+                        self.entries.push(Entry::new(self.plot_years.clone()));
                     }
 
                     ui.separator();
@@ -55,7 +55,7 @@ impl TopBar for finhouse::FinhouseApp {
                                 // Handle edge case where last tab is deleted.
                                 if self.entries.len() == 1 {
                                     // Reset the last tab if deleted.
-                                    self.entries.push(Entry::default());
+                                    self.entries.push(Entry::new(self.plot_years.clone()));
                                 }
                                 // Handle if selected entry is after deleted tab.
                                 else if self.selected_entry >= remove_tab

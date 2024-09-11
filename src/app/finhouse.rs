@@ -1,12 +1,9 @@
-use super::Entry;
+use std::{cell::RefCell, rc::Rc};
 
-#[derive(serde::Deserialize, serde::Serialize)]
-#[serde(default)]
-pub struct FinhouseApp {
-    pub selected_entry: usize,
-    pub entries: Vec<Entry>,
-    pub plot_years: f64,
-}
+use crate::app::entry::Percentage;
+
+use super::Entry;
+use super::FinhouseApp;
 
 impl FinhouseApp {
     /// Do not call this. It is handled by the main thread (main.rs/lib.rs).
@@ -19,14 +16,28 @@ impl FinhouseApp {
 
         Default::default()
     }
+
+    // TODO: This is just a hacky workaround to get references to not get initialized to 0 when loading app from storage.
+    pub fn fix_ref(&mut self) {
+        // Overwrite plot duration with actual value.
+        for entry in &mut self.entries {
+            entry.plot_duration = self.plot_years.clone();
+        }
+    }
 }
 
 impl Default for FinhouseApp {
     fn default() -> Self {
+        use super::entry::MultiLines;
+        let plot_years = Rc::new(RefCell::new(50));
+
+        let mut entry1 = Entry::new(plot_years.clone());
+        let mut entry2 = Entry::new(plot_years.clone());
+
         Self {
-            entries: vec![Entry::default()],
+            entries: vec![entry1, entry2],
             selected_entry: 0,
-            plot_years: 50.0,
+            plot_years: plot_years,
         }
     }
 }

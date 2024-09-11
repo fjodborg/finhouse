@@ -49,18 +49,7 @@ impl ParameterWidget for Entry {
     }
 
     fn available_amount_widget(&mut self) -> impl Widget {
-        // TODO: Make more generic custom parser. for easier reuse.
-
-        let summed_monthly_expenses = self
-            .monthly_expenses
-            .iter()
-            .fold(0.0, |acc, x| acc + x.value as f64);
-
-        let monthly_payment_after_deduction =
-            self.loan.get_monthly_payment() * (1.0 - self.loan.interest_deduction);
-
-        let total_monthly_payment = summed_monthly_expenses + monthly_payment_after_deduction;
-        let available_amount = self.income as f64 - total_monthly_payment;
+        let available_amount = self.calculate_available_amount();
 
         // TODO: Make a method/custom widget for this specific setup.
         let text = egui::RichText::new(format!("{:.0} {}", available_amount, "Dkk"))
@@ -69,46 +58,75 @@ impl ParameterWidget for Entry {
         egui::Label::new(text)
     }
 
-    fn money_paid_widget(&mut self, only_interest: bool) -> impl Widget {
-        // Payment after deduction.
-        let monthly_payment =
-            self.loan.get_monthly_payment() * (1.0 - self.loan.interest_deduction);
-
+    fn money_paid_house_widget(&mut self, only_interest: bool) -> impl Widget {
+        // TODO: Make method for this.
+        let monthly_payment = self.loan.get_monthly_payment();
         let yearly_payment = 12.0 * monthly_payment;
+        let money_paid_for_house = yearly_payment * self.loan.duration;
 
-        let mut money_paid_for_house = yearly_payment * self.loan.duration;
+        let loan = self.loan.get_loan();
+        let interest_paid = money_paid_for_house - loan;
+        let interest_paid_deduced = interest_paid * self.loan.interest_deduction;
 
-        only_interest.then(|| money_paid_for_house -= self.loan.get_loan());
+        let money = match only_interest {
+            true => interest_paid - interest_paid_deduced,
+            false => loan + interest_paid - interest_paid_deduced,
+        };
 
         // TODO: Make a method/custom widget for this specific setup.
         let scale = 1e6;
-        let text = egui::RichText::new(format!("{:0.2}M {}", money_paid_for_house / scale, "Dkk"))
-            .strong()
-            .underline();
+        let text = egui::RichText::new(format!("{:0.2}M {}", money / scale, "Dkk"));
         egui::Label::new(text)
     }
 
-    fn money_paid_and_expenses_widget(&mut self) -> impl Widget {
-        // Payment after deduction.
-        let monthly_payment =
-            self.loan.get_monthly_payment() * (1.0 - self.loan.interest_deduction);
-
+    fn money_paid_all_widget(&mut self) -> impl Widget {
+        let monthly_payment = self.loan.get_monthly_payment();
         let yearly_payment = 12.0 * monthly_payment;
-
         let money_paid_for_house = yearly_payment * self.loan.duration;
+
+        let loan = self.loan.get_loan();
+        let interest_paid = money_paid_for_house - loan;
+        let interest_paid_deduced = interest_paid * self.loan.interest_deduction;
+        let paid_money_for_home = loan + interest_paid - interest_paid_deduced;
 
         let summed_monthly_expenses = self
             .monthly_expenses
             .iter()
             .fold(0.0, |acc, x| acc + x.value as f64);
         let summed_yearly_expenses = 12.0 * summed_monthly_expenses;
-        let summed_expenses = summed_yearly_expenses * self.loan.duration;
 
-        let money_paid = money_paid_for_house + summed_expenses;
+        let plot_duration = *self.plot_duration.borrow() as f64;
+        let summed_expenses = summed_yearly_expenses * plot_duration;
+
+        let money_paid = paid_money_for_home + summed_expenses;
 
         // TODO: Make a method/custom widget for this specific setup.
         let scale = 1e6;
         let text = egui::RichText::new(format!("{:0.2}M {}", money_paid / scale, "Dkk"))
+            .strong()
+            .underline();
+        egui::Label::new(text)
+    }
+
+    fn value_and_worth_widget(&mut self) -> impl Widget {
+        let yearly_available_amount = 12.0 * self.calculate_available_amount();
+        let years = *self.plot_duration.borrow() as f64;
+        let total_amount = years * yearly_available_amount;
+        let house_price = self.loan.house_price;
+
+        let stock_gain = {
+            let investment = self.investment as f64;
+            let interest: f64 = self.investment_gain.into();
+            let tax: f64 = self.investment_tax.into();
+            let gain = investment * (1.0 + interest).powf(years);
+            let delta = gain - investment;
+            (delta > 0.0).then(|| delta * tax).unwrap_or(delta)
+        };
+
+        let value_networth = total_amount + house_price + stock_gain;
+        let scale = 1e6;
+
+        let text = egui::RichText::new(format!("{:.0}M {}", value_networth / scale, "Dkk"))
             .strong()
             .underline();
         egui::Label::new(text)
@@ -133,7 +151,7 @@ impl ParameterWidget for Entry {
     // TODO: avoid the .0 suffix.
     fn interest_widget(&mut self) -> impl Widget {
         DragValue::new(&mut self.loan.interest)
-            .range(0.0..=1.0)
+            .range(0.0001..=1.0)
             .speed(0.0005)
             .custom_formatter(move |n, _| format!("{:.2}%", n * 100.0))
             .custom_parser(|s| Some(s.parse::<f64>().ok()? / 100.0))

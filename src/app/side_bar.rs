@@ -6,7 +6,7 @@ pub trait SideBar {
     fn create_side_panel(&mut self, ui: &mut Ui);
 }
 
-impl SideBar for finhouse::FinhouseApp {
+impl SideBar for super::FinhouseApp {
     fn create_side_panel(&mut self, ui: &mut Ui) {
         egui::ScrollArea::vertical().show(ui, |ui| {
             egui::Grid::new("side_bar")
@@ -81,13 +81,34 @@ fn sidebar_content(ui: &mut Ui, entry: &mut Entry) {
         "Rådighedsbeløb efter skat",
         entry.available_amount_widget(),
     );
-    sidebar_widget(ui, "Formue + værdi", egui::Label::new("TODO"));
-    sidebar_widget(ui, "Penge betalt til rente", entry.money_paid_widget(true));
-    sidebar_widget(ui, "Penge betalt for bolig", entry.money_paid_widget(false));
     sidebar_widget(
         ui,
-        "Penge betalt for alt",
-        entry.money_paid_and_expenses_widget(),
+        &format!(
+            "Penge betalt for rente efter [{}år]",
+            entry.loan.duration.round()
+        ),
+        entry.money_paid_house_widget(true),
+    );
+    sidebar_widget(
+        ui,
+        &format!(
+            "Penge betalt for bolig efter [{}år]",
+            entry.loan.duration.round()
+        ),
+        entry.money_paid_house_widget(false),
+    );
+    sidebar_widget(
+        ui,
+        &format!(
+            "Penge betalt for alt efter [{}år]",
+            *entry.plot_duration.borrow()
+        ),
+        entry.money_paid_all_widget(),
+    );
+    sidebar_widget(
+        ui,
+        &format!("Værdi + Formue efter [{}år]", *entry.plot_duration.borrow()),
+        entry.value_and_worth_widget(),
     );
 
     // sidebar_widget(ui, "", egui::Label::new("TODO"));
@@ -96,12 +117,14 @@ fn sidebar_content(ui: &mut Ui, entry: &mut Entry) {
     ui.end_row();
 
     // TODO: Readd this, once loan stop is properly implemented.
-    // ui.heading("Aktier:");
-    // ui.end_row();
-    // sidebar_widget(ui, "Investerings værdi", entry.investments_widget());
-    // sidebar_widget(ui, "Forventet afkast", entry.investments_gain_widget());
-    // sidebar_widget(ui, "Aktie skat", entry.investments_tax_widget());
-    // ui.end_row();
+    ui.heading("Aktier:");
+    ui.end_row();
+    sidebar_widget(ui, "Investerings værdi", entry.investments_widget());
+
+    sidebar_widget(ui, "Månedlig investerings beløb", egui::Label::new("TODO"));
+    sidebar_widget(ui, "Forventet afkast", entry.investments_gain_widget());
+    sidebar_widget(ui, "Aktie skat", entry.investments_tax_widget());
+    ui.end_row();
 
     ui.heading("Månedlige Udgifter:");
     ui.end_row();

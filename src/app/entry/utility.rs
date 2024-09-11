@@ -14,6 +14,15 @@ pub struct MultiLines {
     pub value: u64,
 }
 
+impl MultiLines {
+    pub fn new(name: &str, value: u64) -> Self {
+        Self {
+            name: name.to_string(),
+            value,
+        }
+    }
+}
+
 #[derive(serde::Deserialize, serde::Serialize)]
 pub struct Loan {
     // Values are in years.
@@ -74,7 +83,6 @@ impl Loan {
 }
 
 // We need these outside Loan to avoid compile errors when using them inside a closure that already borrows a mut of loan.
-
 pub fn calculate_yearly_payment(loan: f64, years: f64, yearly_interest: f64) -> f64 {
     // (L I (1 + I)^Y)/(-1 + (1 + I)^Y)
     let years = years.round();
@@ -83,6 +91,7 @@ pub fn calculate_yearly_payment(loan: f64, years: f64, yearly_interest: f64) -> 
     yearly_payment
 }
 
+// We need these outside Loan to avoid compile errors when using them inside a closure that already borrows a mut of loan.
 pub fn calculate_years(loan: f64, yearly_payment: f64, yearly_interest: f64) -> f64 {
     // log(P/(P - L I))/log(1 + I)
     ((yearly_payment / (yearly_payment - loan * yearly_interest)).ln())
