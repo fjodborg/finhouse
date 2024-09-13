@@ -19,14 +19,13 @@ impl MainContent for FinhouseApp {
                     .entries
                     .iter()
                     .map(|x| x.loan.duration)
-                    .reduce(f64::max)
-                    .unwrap_or(1.0)
-                    .round();
+                    .max()
+                    .unwrap_or(1);
 
                 ui.add(
                     egui::DragValue::new(plot_years)
                         .suffix(" År")
-                        .range(max_years..=100.0)
+                        .range(max_years..=100)
                         .speed(0.1),
                 );
             });
@@ -52,7 +51,7 @@ impl MainContent for FinhouseApp {
             )
             .show(ui, |plot_ui| {
                 let scale = 1e6;
-                for (i, entry) in self.entries.iter().enumerate() {
+                for (i, entry) in self.entries.iter_mut().enumerate() {
                     // TODO: Add slider for max years.
                     let line = entry.data_points(*self.plot_years.borrow(), scale);
                     plot_ui.line(line.name(format!("{} {}", i, entry.name)));

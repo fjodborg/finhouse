@@ -34,9 +34,12 @@ You can optionally specify the target for the binary, that way it speeds up the 
 - [ ] Javascript file needs "./" to work with github page.  
 - [ ] Cache gets reset when main struct has been modified. 
 - [ ] Reference counted Cells are deserialized to default or previous value when loading the page. However they should all reference the same. Workaround is currently implemented.
+- [ ] Floating point inaccuracies/fluctuations in current calculations when sliding some parameters. 
+- [ ] If you leave in e.g. % or Dkk the field is not accepted. Can be solved by expanding the custom parser.
+- [ ] Interest deduction entry is not correct, since it varies over time (Depends on loan), thus should be plotted instead. 
 
 ## Roadmap
-
+- [ ] Create regression tests.
 - [X] Create parameter side bar.
     - [X] Housing, mortgage, interest etc
     - [X] Payments, tax deduction, etc
@@ -63,6 +66,7 @@ You can optionally specify the target for the binary, that way it speeds up the 
 - [ ] Change font size in plot.
 - [ ] Make tabs editable and clickable?
 - [ ] Add loan types. e.g. "Realkredit" and "banklån"
+- [ ] Make text red if invalid value. e.g. if "Rådighedsbeløb" is negative. 
 
 ## Misc
 

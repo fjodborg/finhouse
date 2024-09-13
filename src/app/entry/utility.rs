@@ -30,7 +30,8 @@ pub struct Loan {
     pub initial_payment: f64,
     pub interest: f64,
     pub interest_deduction: f64,
-    pub duration: f64,
+    pub duration: u64,
+    pub interest_amount_by_year: Vec<f64>,
     // payment: f64,
 }
 
@@ -43,7 +44,7 @@ impl Loan {
     /// * `interest` - Yearly interest of the loan (0.0-1.0) not %.
     /// * `interest_deduction` - Yearly tax deduction from interest of the loan (0.0-1.0) not %.
     pub fn new(
-        years: f64,
+        years: u64,
         house_price: f64,
         initial_payment: f64,
         interest: f64,
@@ -55,7 +56,7 @@ impl Loan {
             interest,
             interest_deduction,
             duration: years,
-            // payment: 0.0,
+            interest_amount_by_year: vec![],
         };
         // loan.payment = loan.calculate_payment();
         loan
@@ -74,7 +75,7 @@ impl Loan {
     /// Calculates how much needs to be paid to pay off the debt before the specified years.
     pub fn get_yearly_payment(&self) -> f64 {
         // (L I (1 + I)^Y)/(-1 + (1 + I)^Y)
-        calculate_yearly_payment(self.get_loan(), self.duration, self.interest)
+        calculate_yearly_payment(self.get_loan(), self.duration as f64, self.interest as f64)
     }
 
     pub fn get_monthly_payment(&self) -> f64 {

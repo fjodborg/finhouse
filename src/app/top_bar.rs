@@ -1,4 +1,4 @@
-use super::{finhouse, Entry};
+use super::Entry;
 
 pub trait TopBar {
     /// Create the top bar.

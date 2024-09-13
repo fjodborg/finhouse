@@ -1,5 +1,4 @@
 use super::entry::{Entry, MultiLines, ParameterWidget};
-use super::finhouse;
 use egui::{Label, Ui, Widget};
 
 pub trait SideBar {
@@ -49,14 +48,16 @@ fn sidebar_content(ui: &mut Ui, entry: &mut Entry) {
 
     // TODO: Add inflation
     // TODO: Readd this, once properly implemented.
-    // sidebar_widget(ui, "Årlig værdi stigning", entry.value_increase_widget());
+    sidebar_widget(ui, "Årlig værdi stigning", entry.value_increase_widget());
 
     ui.label("");
     ui.end_row();
     ui.heading("Rente:");
     ui.end_row();
 
-    sidebar_widget(ui, "Rente [ÅOP]", entry.interest_widget());
+    sidebar_widget(ui, "Inflation", egui::Label::new("Todo"));
+    sidebar_widget(ui, "Rente realkredit [ÅOP]", entry.interest_widget());
+    sidebar_widget(ui, "Rente banklån [ÅOP]", egui::Label::new("Todo"));
     sidebar_widget(ui, "Rentefradrag", entry.interest_deduction_widget());
     sidebar_widget(ui, "Låneperiode", entry.payment_duration_widget());
     sidebar_widget(
@@ -66,7 +67,7 @@ fn sidebar_content(ui: &mut Ui, entry: &mut Entry) {
     );
     sidebar_widget(
         ui,
-        "Ydelse efter fradrag",
+        "Ydelse efter gennemsnitlig fradrag",
         entry.monthly_payment_widget(true),
     );
 
@@ -78,23 +79,26 @@ fn sidebar_content(ui: &mut Ui, entry: &mut Entry) {
     sidebar_widget(ui, "Indkomst efter skat", entry.income_widget());
     sidebar_widget(
         ui,
-        "Rådighedsbeløb efter skat",
-        entry.available_amount_widget(),
+        &format!("Rådigheds beløb optil [{}år]", entry.loan.duration),
+        entry.available_amount_widget(false),
     );
     sidebar_widget(
         ui,
         &format!(
-            "Penge betalt for rente efter [{}år]",
-            entry.loan.duration.round()
+            "Rådigheds beløb fra [{}år] til [{}år]",
+            entry.loan.duration,
+            *entry.plot_duration.borrow()
         ),
+        entry.available_amount_widget(true),
+    );
+    sidebar_widget(
+        ui,
+        &format!("Penge betalt for rente efter [{}år]", entry.loan.duration),
         entry.money_paid_house_widget(true),
     );
     sidebar_widget(
         ui,
-        &format!(
-            "Penge betalt for bolig efter [{}år]",
-            entry.loan.duration.round()
-        ),
+        &format!("Penge betalt for bolig efter [{}år]", entry.loan.duration),
         entry.money_paid_house_widget(false),
     );
     sidebar_widget(
@@ -121,7 +125,7 @@ fn sidebar_content(ui: &mut Ui, entry: &mut Entry) {
     ui.end_row();
     sidebar_widget(ui, "Investerings værdi", entry.investments_widget());
 
-    sidebar_widget(ui, "Månedlig investerings beløb", egui::Label::new("TODO"));
+    sidebar_widget(ui, "Månedlig investerings beløb", egui::Label::new("Todo"));
     sidebar_widget(ui, "Forventet afkast", entry.investments_gain_widget());
     sidebar_widget(ui, "Aktie skat", entry.investments_tax_widget());
     ui.end_row();

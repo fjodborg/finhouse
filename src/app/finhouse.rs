@@ -1,7 +1,5 @@
 use std::{cell::RefCell, rc::Rc};
 
-use crate::app::entry::Percentage;
-
 use super::Entry;
 use super::FinhouseApp;
 

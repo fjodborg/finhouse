@@ -35,7 +35,7 @@ pub trait ParameterWidget {
     fn name_widget(&mut self) -> impl Widget;
     fn house_price_widget(&mut self) -> impl Widget;
     fn initial_payment_widget(&mut self) -> impl Widget;
-    fn available_amount_widget(&mut self) -> impl Widget;
+    fn available_amount_widget(&mut self, after_tax: bool) -> impl Widget;
     fn money_paid_house_widget(&mut self, only_interest: bool) -> impl Widget;
     fn money_paid_all_widget(&mut self) -> impl Widget;
     fn value_and_worth_widget(&mut self) -> impl Widget;

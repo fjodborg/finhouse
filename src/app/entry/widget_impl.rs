@@ -48,13 +48,15 @@ impl ParameterWidget for Entry {
             })
     }
 
-    fn available_amount_widget(&mut self) -> impl Widget {
-        let available_amount = self.calculate_available_amount();
+    fn available_amount_widget(&mut self, after_loan: bool) -> impl Widget {
+        let available_amount = self.calculate_available_amount(after_loan);
 
         // TODO: Make a method/custom widget for this specific setup.
-        let text = egui::RichText::new(format!("{:.0} {}", available_amount, "Dkk"))
-            .strong()
-            .underline();
+        let text = egui::RichText::new(format!("{:.0} {}", available_amount, "Dkk"));
+        let text = match after_loan {
+            false => text.underline().strong(),
+            true => text,
+        };
         egui::Label::new(text)
     }
 
@@ -62,7 +64,7 @@ impl ParameterWidget for Entry {
         // TODO: Make method for this.
         let monthly_payment = self.loan.get_monthly_payment();
         let yearly_payment = 12.0 * monthly_payment;
-        let money_paid_for_house = yearly_payment * self.loan.duration;
+        let money_paid_for_house = yearly_payment * self.loan.duration as f64;
 
         let loan = self.loan.get_loan();
         let interest_paid = money_paid_for_house - loan;
@@ -80,25 +82,7 @@ impl ParameterWidget for Entry {
     }
 
     fn money_paid_all_widget(&mut self) -> impl Widget {
-        let monthly_payment = self.loan.get_monthly_payment();
-        let yearly_payment = 12.0 * monthly_payment;
-        let money_paid_for_house = yearly_payment * self.loan.duration;
-
-        let loan = self.loan.get_loan();
-        let interest_paid = money_paid_for_house - loan;
-        let interest_paid_deduced = interest_paid * self.loan.interest_deduction;
-        let paid_money_for_home = loan + interest_paid - interest_paid_deduced;
-
-        let summed_monthly_expenses = self
-            .monthly_expenses
-            .iter()
-            .fold(0.0, |acc, x| acc + x.value as f64);
-        let summed_yearly_expenses = 12.0 * summed_monthly_expenses;
-
-        let plot_duration = *self.plot_duration.borrow() as f64;
-        let summed_expenses = summed_yearly_expenses * plot_duration;
-
-        let money_paid = paid_money_for_home + summed_expenses;
+        let money_paid = self.calculate_money_paid();
 
         // TODO: Make a method/custom widget for this specific setup.
         let scale = 1e6;
@@ -109,22 +93,7 @@ impl ParameterWidget for Entry {
     }
 
     fn value_and_worth_widget(&mut self) -> impl Widget {
-        let yearly_available_amount = 12.0 * self.calculate_available_amount();
-        let years = *self.plot_duration.borrow() as f64;
-        let total_amount = years * yearly_available_amount;
-        let house_price = self.loan.house_price;
-
-        let investment = self.investment as f64;
-        let stock_gain = investment + {
-            let interest: f64 = self.investment_gain.into();
-            let tax: f64 = self.investment_tax.into();
-            let gain = investment * (1.0 + interest).powf(years);
-            let delta = gain - investment;
-            // TODO: Maybe reconsider this? A match or if seems more readable.
-            (delta > 0.0).then(|| delta * tax).unwrap_or(delta)
-        };
-
-        let value_networth = total_amount + house_price + stock_gain;
+        let value_networth = self.calculate_value_and_networth();
         let scale = 1e6;
 
         let text = egui::RichText::new(format!("{:.2}M {}", value_networth / scale, "Dkk"))
@@ -142,17 +111,18 @@ impl ParameterWidget for Entry {
     }
 
     fn value_increase_widget(&mut self) -> impl Widget {
-        DragValue::new(&mut self.value_increase)
-            .range(-100.0..=10_000.0)
-            .speed(0.05)
-            .custom_formatter(move |n, _| format!("{:.2}%", n * 100.0))
-            .custom_parser(|s| Some(s.parse::<f64>().ok()? / 100.0))
+        // DragValue::new(&mut self.value_increase)
+        //     .range(-100.0..=10_000.0)
+        //     .speed(0.05)
+        //     .custom_formatter(move |n, _| format!("{:.2}%", n * 100.0))
+        //     .custom_parser(|s| Some(s.parse::<f64>().ok()? / 100.0))
+        egui::Label::new("Todo")
     }
 
     // TODO: avoid the .0 suffix.
     fn interest_widget(&mut self) -> impl Widget {
         DragValue::new(&mut self.loan.interest)
-            .range(0.0001..=1.0)
+            .range(1e-9..=1.0)
             .speed(0.0005)
             .custom_formatter(move |n, _| format!("{:.2}%", n * 100.0))
             .custom_parser(|s| Some(s.parse::<f64>().ok()? / 100.0))
@@ -168,7 +138,7 @@ impl ParameterWidget for Entry {
     }
 
     // Will affect loan duration.
-    fn monthly_payment_widget(&mut self, after_tax: bool) -> impl Widget {
+    fn monthly_payment_widget(&mut self, after_tax_deduction: bool) -> impl Widget {
         use log::warn;
         let loan = self.loan.get_loan();
 
@@ -176,18 +146,13 @@ impl ParameterWidget for Entry {
             warn!("Impossible scenario occurred. This should have been handled in the initial_payment section. Doing workaround");
             self.loan.initial_payment = self.loan.house_price;
         }
+
         let mut monthly_payment = self.loan.get_monthly_payment();
 
         // Scale with deduction if present.
-        after_tax.then(|| {
-            monthly_payment *= 1.0 - self.loan.interest_deduction;
+        after_tax_deduction.then(|| {
+            monthly_payment -= self.calculate_monthly_tax_deduced_interest_amount();
         });
-
-        // Add all expenses to it.
-        // monthly_payment += self
-        //     .monthly_expenses
-        //     .iter()
-        //     .fold(0.0, |acc, x| acc + x.value as f64);
 
         // TODO: Make more generic custom parser. for easier reuse.
         let default_multi = &1.0;
@@ -209,7 +174,7 @@ impl ParameterWidget for Entry {
                 payment *= multiplier.unwrap_or(*default_multi);
 
                 // Scale the value according to if it is after or before tax deduction.
-                after_tax.then(|| {
+                after_tax_deduction.then(|| {
                     let interest_deduction: f64 = interest_deduction.into();
                     payment /= 1.0 - interest_deduction;
                 });
