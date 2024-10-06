@@ -12,14 +12,25 @@ impl ParameterWidget for Entry {
     fn house_price_widget(&mut self) -> impl Widget {
         // TODO: Make more generic custom parser. for easier reuse.
         let default_multi = 1e6;
-        DragValue::new(&mut self.loan.house_price)
+        let drag_value = DragValue::new(&mut self.loan.house_price)
             .range(0.0..=1_000_000_000.0)
             .speed(20_000)
-            .custom_formatter(move |n, _| format!("{}M {}", n / default_multi, "Dkk"))
+            .custom_formatter(move |n, _| format!("{:.2}M {}", n / default_multi, "Dkk"))
             .custom_parser(move |s| {
                 let (amount, multiplier, _) = string_parse_helper(s).ok()?;
                 Some(amount * multiplier.unwrap_or(default_multi))
-            })
+            });
+        drag_value
+    }
+    fn future_house_price_widget(&mut self) -> impl Widget {
+        // TODO: Make more generic custom parser. for easier reuse.
+        let default_multi = 1e6;
+        let increase: f64 = self.value_increase.into();
+        let house_price_new =
+            self.loan.house_price * (1.0 + increase).powf(*self.plot_duration.borrow() as f64);
+        let text =
+            egui::RichText::new(format!("{:.2}M {}", house_price_new / default_multi, "Dkk"));
+        egui::Label::new(text)
     }
 
     fn income_widget(&mut self) -> impl Widget {
@@ -41,7 +52,7 @@ impl ParameterWidget for Entry {
         DragValue::new(&mut self.loan.initial_payment)
             .range(0.0..=self.loan.house_price)
             .speed(20_000)
-            .custom_formatter(move |n, _| format!("{}M {}", n / default_multi, "Dkk"))
+            .custom_formatter(move |n, _| format!("{:.2}M {}", n / default_multi, "Dkk"))
             .custom_parser(|s| {
                 let (amount, multiplier, _) = string_parse_helper(s).ok()?;
                 Some(amount * multiplier.unwrap_or(*default_multi))
@@ -111,12 +122,11 @@ impl ParameterWidget for Entry {
     }
 
     fn value_increase_widget(&mut self) -> impl Widget {
-        // DragValue::new(&mut self.value_increase)
-        //     .range(-100.0..=10_000.0)
-        //     .speed(0.05)
-        //     .custom_formatter(move |n, _| format!("{:.2}%", n * 100.0))
-        //     .custom_parser(|s| Some(s.parse::<f64>().ok()? / 100.0))
-        egui::Label::new("Todo")
+        DragValue::new(&mut self.value_increase)
+            .range(-1.0..=1.0)
+            .speed(0.0005)
+            .custom_formatter(move |n, _| format!("{:.2}%", n * 100.0))
+            .custom_parser(|s| Some(s.parse::<f64>().ok()? / 100.0))
     }
 
     // TODO: avoid the .0 suffix.

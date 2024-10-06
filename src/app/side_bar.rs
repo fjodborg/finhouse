@@ -40,6 +40,8 @@ fn sidebar_multi_widget(ui: &mut Ui, multi_widgets: Vec<(impl Widget, impl Widge
 }
 
 fn sidebar_content(ui: &mut Ui, entry: &mut Entry) {
+    let plot_duration = *entry.plot_duration.borrow();
+
     ui.heading("Bolig:");
     ui.end_row();
     sidebar_widget(ui, "Tab Navn", entry.name_widget());
@@ -86,32 +88,33 @@ fn sidebar_content(ui: &mut Ui, entry: &mut Entry) {
         ui,
         &format!(
             "Rådigheds beløb fra [{}år] til [{}år]",
-            entry.loan.duration,
-            *entry.plot_duration.borrow()
+            entry.loan.duration, plot_duration
         ),
         entry.available_amount_widget(true),
     );
     sidebar_widget(
         ui,
-        &format!("Penge betalt for rente efter [{}år]", entry.loan.duration),
+        &format!("Rente betalt efter [{}år]", entry.loan.duration),
         entry.money_paid_house_widget(true),
     );
     sidebar_widget(
         ui,
-        &format!("Penge betalt for bolig efter [{}år]", entry.loan.duration),
+        &format!("Rente + afdrag betalt efter [{}år]", entry.loan.duration),
         entry.money_paid_house_widget(false),
     );
     sidebar_widget(
         ui,
-        &format!(
-            "Penge betalt for alt efter [{}år]",
-            *entry.plot_duration.borrow()
-        ),
+        &format!("Boligens værdi efter [{}år]", plot_duration),
+        entry.future_house_price_widget(),
+    );
+    sidebar_widget(
+        ui,
+        &format!("Omkostinger for alt efter [{}år]", plot_duration),
         entry.money_paid_all_widget(),
     );
     sidebar_widget(
         ui,
-        &format!("Værdi + Formue efter [{}år]", *entry.plot_duration.borrow()),
+        &format!("Værdi + Formue efter [{}år]", plot_duration),
         entry.value_and_worth_widget(),
     );
 

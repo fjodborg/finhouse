@@ -114,7 +114,8 @@ impl Entry {
             (delta > 0.0).then(|| delta * tax).unwrap_or(delta)
         };
 
-        let house_price = self.loan.house_price;
+        let house_pirce_increase: f64 = self.value_increase.into();
+        let house_price = self.loan.house_price * (1.0 + house_pirce_increase).powf(plot_years);
 
         let value_networth = total_amount + house_price + stock_gain;
         value_networth
@@ -138,9 +139,6 @@ impl Entry {
 
         let loan = self.loan.get_loan();
         let yearly_payment = 12.0 * self.loan.get_monthly_payment();
-
-        // TODO: Needs to handle monthly payment after house is paid off somehow.
-        // Maybe the solution is to just not check if loan is < 0.0, since a persons "net-worth" still increases.
 
         self.loan.interest_amount_by_year.clear();
         self.loan

@@ -11,7 +11,7 @@ A demo can be seen here: [Demo](https://fjodborg.github.io/finhouse_page/)
 * Each tab has its own set of parameters you can customize.
 * Right click on tabs to remove them.
 * Black boxes (Darkmode) can be edited to custom text.
-* Parameters are cached on your pc.
+* Parameters are cached on your pc/browser.
     * Remember if you use chrome and maybe chromium based browsers and you don't want to loose your parameters wait 10 seconds before refreshing/closing it. See __known issues__ for more info. This is not a problem for firefox. 
     * Cache is reset if some specific parts of the code is changed and it get's redeployed. 
 
@@ -27,16 +27,6 @@ You might need to install _trunk_ binary and _wasm_ targets
 
 You can optionally specify the target for the binary, that way it speeds up the compile time for native by a lot.
 
-## Known Issues 
-
-- [ ] Fix state saving on exit on chrome. 
-    - Currently chrome only saves the state every 10 seconds, however it should also save on shutdown/refresh like firefox does.
-- [ ] Javascript file needs "./" to work with github page.  
-- [ ] Cache gets reset when main struct has been modified. 
-- [ ] Reference counted Cells are deserialized to default or previous value when loading the page. However they should all reference the same. Workaround is currently implemented.
-- [ ] Floating point inaccuracies/fluctuations in current calculations when sliding some parameters. 
-- [ ] If you leave in e.g. % or Dkk the field is not accepted. Can be solved by expanding the custom parser.
-- [ ] Interest deduction entry is not correct, since it varies over time (Depends on loan), thus should be plotted instead. 
 
 ## Roadmap
 - [ ] Create regression tests.
@@ -47,6 +37,7 @@ You can optionally specify the target for the binary, that way it speeds up the 
 - [ ] Add stocks parameters.
     - [ ] Monthly put.
 - [ ] Add default with house vs renting and stocks.
+- [ ] Add copy entry to new tab option.
 - [ ] Add inflation.
 - [ ] Add total expenses paid for each expense. (box plot?)
 - [ ] Hover over text.
@@ -54,19 +45,32 @@ You can optionally specify the target for the binary, that way it speeds up the 
 - [X] Add dark and light mode.
 - [X] Add plot for value over time.
     - [X] Add axis text.
+    - [X] Add Loan plot.
     - [ ] Add "legend" with minimum payment on the plot for each line.
-    - [ ] Add option to "Offset" plot with house value. 
-    - [ ] Add multiple plots, e.g. loan payment, stock, value, total.
+    - [ ] Add option for other plots, e.g. loan payment, stock, value, total which checkboxes for what to include in main plot. 
 - [ ] Add readme/tooltip/popup about controls.
-- [ ] Remove dependency on server being online (Websocket is running).
-- [ ] Support multiple languages.
+- [ ] Remove dependency on server being online (offline mode if cached).
 - [ ] Find a way to avoid double maintenance with the sidebar widgets.
     - Perhaps base it off a json file. This also makes multiple languages easier.
+- [ ] Support multiple languages.
 - [ ] Add "Kurs tab", i don't know the english world.
 - [ ] Change font size in plot.
-- [ ] Make tabs editable and clickable?
+- [ ] Make tabs editable and clickable at the same time.
+- [ ] Changeable order of tabs.
 - [ ] Add loan types. e.g. "Realkredit" and "banklån"
 - [ ] Make text red if invalid value. e.g. if "Rådighedsbeløb" is negative. 
+- [ ] Only render on value change.
+
+## Known Issues 
+
+- [ ] Fix state saving on exit on chrome. 
+    - Currently chrome only saves the state every 10 seconds, however it should also save on shutdown/refresh like firefox does.
+- [ ] Javascript file needs "./" to work with github page.  
+- [ ] Cache gets reset when main struct has been modified. 
+- [ ] Reference counted Cells are deserialized to default or previous value when loading the page. However they should all reference the same. Workaround is currently implemented.
+- [ ] Floating point inaccuracies/fluctuations in current calculations when sliding some parameters. 
+- [ ] If you leave in e.g. % or Dkk the field is not accepted. Can be solved by expanding the custom parser.
+- [ ] Interest deduction entry is not correct, since it varies over time (Depends on loan at given time), thus should be plotted instead. 
 
 ## Misc
 
