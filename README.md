@@ -61,6 +61,7 @@ You can optionally specify the target for the binary, that way it speeds up the 
 - [ ] Make text red if invalid value. e.g. if "Rådighedsbeløb" is negative. 
 - [ ] Only render on value change.
 - [ ] Add support for different comma seperators. e.g. select the type in a field or something.
+- [ ] Add [x] to topbar tabs and to expenses.
 
 ## Known Issues 
 
