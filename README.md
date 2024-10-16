@@ -37,7 +37,7 @@ You can optionally specify the target for the binary, that way it speeds up the 
     - [X] Other expenses.
 - [ ] Add stocks parameters.
     - [ ] Monthly put.
-- [ ] Add default with house vs renting and stocks.
+- [x] Add default with house vs renting and stocks.
 - [ ] Add copy entry to new tab option.
 - [ ] Add inflation.
 - [ ] Add total expenses paid for each expense. (box plot?)
