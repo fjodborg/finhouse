@@ -29,6 +29,7 @@ You can optionally specify the target for the binary, that way it speeds up the 
 
 
 ## Roadmap
+- [ ] Move most roadmap entries to git issues instead. 
 - [ ] Create regression tests.
 - [X] Create parameter side bar.
     - [X] Housing, mortgage, interest etc
